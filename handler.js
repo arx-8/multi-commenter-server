@@ -7,15 +7,26 @@
 module.exports = async (event, response) => {
   try {
     switch (event.body.path) {
-      case "/auth/create":
-        await require("./src/handlers/auth").create(event, response)
+      case "/auth/create": {
+        const result = await require("./src/handlers/auth").create(event.body)
+        response.status(200).succeed(result)
         break
+      }
 
-      case "/statuses/create":
-        await require("./src/handlers/statuses").create(event, response)
+      case "/statuses/create": {
+        const result = await require("./src/handlers/statuses").create(
+          event.body
+        )
+        response.status(200).succeed(result)
         break
+      }
 
       default:
+        /**
+         * for exhaustiveness checking
+         * @type {undefined}
+         */
+        const caseGuard = event.body.path
         response.status(404).succeed("404 Not Found")
         break
     }

@@ -5,12 +5,12 @@
  */
 module.exports = {
   /**
-   * @param {import("../types/request").UnuboServerlessEvent} event
-   * @param {import("../types/response").UnuboServerlessResponse} response
-   * @returns {Promise<void>}
+   * @param {import("../types/request").StatusesCreateRequestBody} requestBody
+   * @returns {Promise<import("../types/response").StatusesCreateResponse>}
    */
-  create: async (event, response) => {
+  create: async (requestBody) => {
     // TODO
-    console.log(event, response)
+    console.log(requestBody)
+    return {}
   },
 }

@@ -4,13 +4,12 @@ const { fetchAuthenticateUrl } = require("../dataLayer/api")
 
 module.exports = {
   /**
-   * @param {import("../types/request").UnuboServerlessEvent<import("../types/request").AuthCreateRequestBody>} event
-   * @param {import("../types/response").UnuboServerlessResponse} response
-   * @returns {Promise<void>}
+   * @param {import("../types/request").AuthCreateRequestBody} requestBody
+   * @returns {Promise<import("../types/response").AuthCreateResponse>}
    */
-  create: async (event, response) => {
+  create: async (requestBody) => {
     const { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } = getEnvValues()
-    const { callback_url } = validate(event.body)
+    const { callback_url } = validate(requestBody)
 
     const oauthUrl = await fetchAuthenticateUrl(
       TWITTER_CONSUMER_KEY,
@@ -18,18 +17,18 @@ module.exports = {
       callback_url
     )
 
-    response.status(200).succeed({
+    return {
       authenticate_url: oauthUrl,
-    })
+    }
   },
 }
 
 /**
- * @param {import("../types/request").AuthCreateRequestBody} eventBody
+ * @param {import("../types/request").AuthCreateRequestBody} requestBody
  * @returns {import("../types/request").ValidatedRequestBody<import("../types/request").AuthCreateRequestBody>} validated request body
  */
-const validate = (eventBody) => {
-  const callback_url = eventBody.callback_url
+const validate = (requestBody) => {
+  const callback_url = requestBody.callback_url
   if (!callback_url || !callback_url.startsWith("http")) {
     throw new Error(
       `Error: Invalid request body. callback_url=${callback_url || "undefined"}`
