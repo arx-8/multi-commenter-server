@@ -1,17 +1,22 @@
+type DefinedRoutePath = "/auth/create" | "/statuses/create"
+
 /**
  * Event
  */
-export type Event<TBody extends Body> = {
+export type UnuboServerlessEvent<TBody extends Body = Body> = {
   body: TBody
   headers: Headers
   method: "POST"
+  // GET使う予定なし
   query: never
-  path: string
+  // リクエストに依らず固定値のようで、役に立たない
+  path: "/"
 }
 
-type Body = {
+type Body = Partial<{
+  path: DefinedRoutePath
   [key: string]: string
-}
+}>
 
 type Headers = {
   host: string
@@ -39,18 +44,12 @@ type Headers = {
   "x-start-time": string
 }
 
-/**
- * Response
- */
-export type Response = {
-  status: (httpStatusCode: number) => Response
-  succeed: (body: SucceedResponse | FailedResponse) => void
-}
+export type AuthCreateRequestBody = Partial<{
+  path: DefinedRoutePath
+  callback_url: string
+}>
 
-type SucceedResponse = {
-  authenticate_url: string
-}
-
-type FailedResponse = {
-  message: string
-}
+export type StatusesCreateRequestBody = Partial<{
+  path: DefinedRoutePath
+  // TODO
+}>

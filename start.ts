@@ -5,20 +5,25 @@ import { config } from "dotenv"
 config()
 
 import handler from "./handler"
+import {
+  UnuboServerlessEvent,
+  AuthCreateRequestBody,
+} from "./src/types/request"
 
 const main = async () => {
-  const dummyEvent = {
+  const dummyEvent: UnuboServerlessEvent<AuthCreateRequestBody> = {
     body: {
+      path: "/auth/create",
       callback_url: "http://localhost",
     },
-    headers: {} as any,
-    method: "POST" as const,
+    headers: undefined as never,
+    method: undefined as never,
     query: undefined as never,
-    path: "/",
+    path: undefined as never,
   }
 
   const dummyResponse = {
-    statusCode: 500,
+    statusCode: 0,
     body: {} as Object,
 
     status: function(httpStatusCode: number) {
@@ -32,6 +37,8 @@ const main = async () => {
   }
 
   await handler(dummyEvent, dummyResponse)
+
+  // assert
   console.log(dummyResponse)
 }
 main()

@@ -22,6 +22,7 @@ POST https://multi-commenter-server.unubo.app/
 Content-Type: application/json
 
 {
+    "path": "/auth/create",
     "callback_url": "http://localhost"
 }
 ```
