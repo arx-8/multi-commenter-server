@@ -53,3 +53,9 @@ export type StatusesCreateRequestBody = Partial<{
   path: DefinedRoutePath
   // TODO
 }>
+
+/**
+ * validate済みのRequestBody
+ * 処理に不要なプロパティ(e.g. path)は削除する
+ */
+export type ValidatedRequestBody<T extends Body> = Required<Omit<T, "path">>

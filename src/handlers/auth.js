@@ -1,4 +1,5 @@
 // @ts-check
+const { getEnvValues } = require("../utils/utils")
 const { fetchAuthenticateUrl } = require("../dataLayer/api")
 
 module.exports = {
@@ -8,37 +9,34 @@ module.exports = {
    * @returns {Promise<void>}
    */
   create: async (event, response) => {
-    // env values
-    const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY
-    const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET
-
-    // validate env
-    if (!TWITTER_CONSUMER_KEY || !TWITTER_CONSUMER_SECRET) {
-      response.status(500).succeed({
-        message:
-          "Error: Found undefined env values! Check the server settings.",
-      })
-      return
-    }
-
-    // validate request
-    const callbackUrl = event.body.callback_url
-    if (!callbackUrl || !callbackUrl.startsWith("http")) {
-      response.status(500).succeed({
-        message: `Error: Invalid request body. callbackUrl=${callbackUrl ||
-          "undefined"}`,
-      })
-      return
-    }
+    const { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } = getEnvValues()
+    const { callback_url } = validate(event.body)
 
     const oauthUrl = await fetchAuthenticateUrl(
       TWITTER_CONSUMER_KEY,
       TWITTER_CONSUMER_SECRET,
-      callbackUrl
+      callback_url
     )
 
     response.status(200).succeed({
       authenticate_url: oauthUrl,
     })
   },
+}
+
+/**
+ * @param {import("../types/request").AuthCreateRequestBody} eventBody
+ * @returns {import("../types/request").ValidatedRequestBody<import("../types/request").AuthCreateRequestBody>} validated request body
+ */
+const validate = (eventBody) => {
+  const callback_url = eventBody.callback_url
+  if (!callback_url || !callback_url.startsWith("http")) {
+    throw new Error(
+      `Error: Invalid request body. callback_url=${callback_url || "undefined"}`
+    )
+  }
+
+  return {
+    callback_url,
+  }
 }
