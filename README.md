@@ -25,6 +25,11 @@ Content-Type: application/json
     "path": "/auth/create",
     "callback_url": "http://localhost"
 }
+
+OPTIONS https://multi-commenter-server.unubo.app/
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: content-type
+Sec-Fetch-Mode: no-cors
 ```
 
 ## Settings

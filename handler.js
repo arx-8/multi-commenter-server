@@ -17,6 +17,17 @@ const COMMON_HEADER = {
  */
 module.exports = async (event, response) => {
   try {
+    console.log(event)
+
+    if (event.method === "OPTIONS") {
+      // preflight request
+      response
+        .status(200)
+        .headers(COMMON_HEADER)
+        .succeed()
+      return
+    }
+
     switch (event.body.path) {
       case "/auth/create": {
         const result = await require("./src/handlers/auth").create(event.body)
