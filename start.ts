@@ -6,20 +6,30 @@ config()
 
 import handler from "./handler"
 
-const dummyResponse = {
-  statusCode: 500,
-  body: "" as string | Object,
+const main = async () => {
+  const dummyEvent = {
+    body: {},
+    headers: {} as any,
+    method: "POST" as const,
+    query: undefined as never,
+    path: "/",
+  }
 
-  status: function(httpStatusCode: number) {
-    this.statusCode = httpStatusCode
-    return this
-  },
+  const dummyResponse = {
+    statusCode: 500,
+    body: {} as Object,
 
-  succeed: function(body: string | Object) {
-    this.body = body
-  },
+    status: function(httpStatusCode: number) {
+      this.statusCode = httpStatusCode
+      return this
+    },
+
+    succeed: function(body: Object) {
+      this.body = body
+    },
+  }
+
+  await handler(dummyEvent, dummyResponse)
+  console.log(dummyResponse)
 }
-
-handler({} as any, dummyResponse)
-
-console.log(dummyResponse)
+main()

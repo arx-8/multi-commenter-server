@@ -44,5 +44,13 @@ type Headers = {
  */
 export type Response = {
   status: (httpStatusCode: number) => Response
-  succeed: (body: string | Object) => void
+  succeed: (body: SucceedResponse | FailedResponse) => void
+}
+
+type SucceedResponse = {
+  authenticate_url: string
+}
+
+type FailedResponse = {
+  message: string
 }
