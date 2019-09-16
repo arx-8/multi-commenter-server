@@ -2,28 +2,17 @@
 const OAuth = require("oauth").OAuth
 
 /**
- * @param {import("./src/types").Event<{}>} event
+ * @param {import("./src/types").Event<{callback_url?: string}>} event
  * @param {import("./src/types").Response} response
  * @returns {Promise<void>}
  */
 module.exports = async (event, response) => {
-  console.log("******************UP***********************")
-  console.log(event)
-  console.log(response)
-  console.log("******************DOWN*********************")
-
   // env values
   const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY
   const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET
-  const TWITTER_AUTHORIZE_CALLBACK_URL =
-    process.env.TWITTER_AUTHORIZE_CALLBACK_URL
 
   // validate env
-  if (
-    !TWITTER_CONSUMER_KEY ||
-    !TWITTER_CONSUMER_SECRET ||
-    !TWITTER_AUTHORIZE_CALLBACK_URL
-  ) {
+  if (!TWITTER_CONSUMER_KEY || !TWITTER_CONSUMER_SECRET) {
     response.status(500).succeed({
       message: "Error: Found undefined env values! Check the server settings.",
     })
@@ -31,12 +20,19 @@ module.exports = async (event, response) => {
   }
 
   // validate request
-  // TODO validate request
+  const callbackUrl = event.body.callback_url
+  if (!callbackUrl || !callbackUrl.startsWith("http")) {
+    response.status(500).succeed({
+      message: `Error: Invalid request body. callbackUrl=${callbackUrl ||
+        "undefined"}`,
+    })
+    return
+  }
 
-  const oauthUrl = await auth(
+  const oauthUrl = await fetchAuthenticateUrl(
     TWITTER_CONSUMER_KEY,
     TWITTER_CONSUMER_SECRET,
-    TWITTER_AUTHORIZE_CALLBACK_URL
+    callbackUrl
   )
 
   response.status(200).succeed({
@@ -52,7 +48,11 @@ module.exports = async (event, response) => {
  * @param {string} authorizeCallback
  * @return {Promise<string>} OAuth authenticate page url
  */
-const auth = (consumerKey, consumerSecret, authorizeCallback) => {
+const fetchAuthenticateUrl = (
+  consumerKey,
+  consumerSecret,
+  authorizeCallback
+) => {
   const oa = new OAuth(
     "https://api.twitter.com/oauth/request_token",
     "https://api.twitter.com/oauth/access_token",

@@ -8,7 +8,9 @@ import handler from "./handler"
 
 const main = async () => {
   const dummyEvent = {
-    body: {},
+    body: {
+      callback_url: "http://localhost",
+    },
     headers: {} as any,
     method: "POST" as const,
     query: undefined as never,
